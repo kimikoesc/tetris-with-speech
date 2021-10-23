@@ -22,7 +22,7 @@ function Tetris() {
 
     console.log('re-render');
 
-    const movePlayer = (dir) => {
+    const movePlayer = dir => {
         updatePlayerPosition({x: dir, y: 0});
     };
 
@@ -65,7 +65,7 @@ function Tetris() {
                         <Display text="Level"/>
                     </div>
                     )}
-                    <StartButton onClick={startGame}/>
+                    <StartButton callback={startGame}/>
                 </aside>
             </StyledTetris>
         </StyledTetrisWrapper>

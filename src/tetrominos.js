@@ -13,14 +13,12 @@ export const allTetrominoes = {
         shape: [
             [0, "J", 0],
             [0, "J", 0],
-            [0, "J", 0],
             ["J", "J", 0],
         ], 
         color: '36, 95, 223'
     },
     L: { 
         shape: [
-            [0, "L", 0],
             [0, "L", 0],
             [0, "L", 0],
             [0, "L", "L"],
@@ -34,7 +32,7 @@ export const allTetrominoes = {
         ], 
         color: '223, 217, 36'
     },
-    L: { 
+    S: { 
         shape: [
             [0, "S", "S"],
             ["S", "S", 0],
