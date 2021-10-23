@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { usePlayer } from '../hooks/usePlayer';
 import { useStage } from '../hooks/useStage';
 import { createStage, checkCollision } from '../gameHelpers';
+import { useInterval } from '../hooks/useInterval';
 
 // Style Components
 import { StyledTetrisWrapper, StyledTetris } from './styles/style-tetris';
@@ -30,6 +31,7 @@ function Tetris() {
 
     const startGame = () => {
         setStage(createStage());
+        setDropTime(1000);
         resetPlayer();
         setGameOver(false);
     };
@@ -48,7 +50,7 @@ function Tetris() {
     };
 
     const dropPlayer = () => {
-        drop()
+        drop();
     };
 
     const move = ({keyCode}) => {
@@ -64,6 +66,10 @@ function Tetris() {
             }
         };
     };
+
+    useInterval(() => {
+        drop()
+    }, dropTime);
 
     return (
         <StyledTetrisWrapper role="button" tabIndex="0" onKeyDown={e => move(e)}>
