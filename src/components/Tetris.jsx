@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+// Tensorflow Speech Commands Model
+import * as tf from "@tensorflow/tfjs";
+import * as speech from "@tensorflow-models/speech-commands";
 
 // Custom Hooks
 import { usePlayer } from '../hooks/usePlayer';
@@ -14,16 +18,48 @@ import { StyledTetrisWrapper, StyledTetris } from './styles/style-tetris';
 import Stage from './Stage';
 import Display from './Display';
 import StartButton from './StartButton';
+import VoiceCommand from './VoiceCommand';
 
-function Tetris() {
+const Tetris = () => {
     const [dropTime, setDropTime] = useState(null);
     const [gameOver, setGameOver] = useState(false);
-
     const [player, updatePlayerPosition, resetPlayer, playerRotate] = usePlayer();
     const [stage, setStage, rowsCleared] = useStage(player, resetPlayer);
     const [score, setScore, rows, setRows, level, setLevel] = useGameStatus(rowsCleared);
 
-    console.log('re-render');
+    // For speech commands
+    const [model, setModel] = useState(null);
+    const [action, setAction] = useState(null);
+    const [labels, setLabels] = useState(null);
+
+    const loadModel = async () => { // Loads the Speech Command Model
+        const recognizer = await speech.create('BROWSER_FFT', 'directional4w');
+        console.log("Model Loaded");
+        await recognizer.ensureModelLoaded()
+        console.log(recognizer.wordLabels()) 
+        setModel(recognizer);
+        setLabels(recognizer.wordLabels()); // ["left", "right", "down", "rotate"]
+    };
+
+    useEffect(() => {
+        loadModel()
+    }, []);
+
+
+    function argMax(arr) {
+        return arr.map((x, i) => [x, i]).reduce((r,a) => (a[0] > r[0] ? a:r))[1];
+    }
+
+    const recognizeCommands = async () => { // Listens to command
+        // As soon as model is triggered, 
+        console.log("Listening for commands..");
+        // Model listens to our microphone to check if we are actually saying something
+        model.listen(result => {
+            console.log(result.spectrogram)
+            setAction(labels[argMax(Object.values(result.scores))]) // Returns the most accurate result
+            console.log(labels[argMax(Object.values(result.scores))]);
+        }, { includeSpectrogram: true, probabilityThreshold: 0.7 }) // Additional Parameters
+    }
 
     const movePlayer = dir => {
         if (!checkCollision(player, stage, { x: dir, y: 0})) {
@@ -97,6 +133,7 @@ function Tetris() {
                     </div>
                     )}
                     <StartButton callback={startGame}/>
+                    <VoiceCommand callback={recognizeCommands} action={action}/>
                 </aside>
             </StyledTetris>
         </StyledTetrisWrapper>

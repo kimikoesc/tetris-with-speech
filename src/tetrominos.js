@@ -7,7 +7,7 @@ export const allTetrominoes = {
             [0, "I", 0, 0],
             [0, "I", 0, 0],
         ], 
-        color: '80, 227, 230'
+        color: '255,226,49'
     },
     J: { 
         shape: [
@@ -15,7 +15,7 @@ export const allTetrominoes = {
             [0, "J", 0],
             ["J", "J", 0],
         ], 
-        color: '36, 95, 223'
+        color: '255,210,125'
     },
     L: { 
         shape: [
@@ -23,14 +23,14 @@ export const allTetrominoes = {
             [0, "L", 0],
             [0, "L", "L"],
         ], 
-        color: '223, 173, 36'
+        color: '203,244,130'
     },
     O: { 
         shape: [
             ["O", "O"],
             ["O", "O"]
         ], 
-        color: '223, 217, 36'
+        color: '255,173,177'
     },
     S: { 
         shape: [
@@ -38,7 +38,7 @@ export const allTetrominoes = {
             ["S", "S", 0],
             [0, 0, 0]
         ], 
-        color: '41, 211, 56'
+        color: '212,142,193'
     },
     Z: { 
         shape: [
@@ -46,7 +46,7 @@ export const allTetrominoes = {
             [0, "Z", "Z"],
             [0, 0, 0]
         ], 
-        color: '41, 45, 56'
+        color: '173,225,236'
     },
     T: { 
         shape: [
@@ -54,7 +54,7 @@ export const allTetrominoes = {
             ['T', 'T', 'T'],
             [0, 'T', 0]
         ], 
-        color: '132, 61, 198'
+        color: '116,89,196'
     }
 };
 
