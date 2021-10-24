@@ -45,8 +45,7 @@ const Tetris = () => {
         loadModel()
     }, []);
 
-
-    function argMax(arr) {
+    function argMax(arr) { // Gets the most accurate word
         return arr.map((x, i) => [x, i]).reduce((r,a) => (a[0] > r[0] ? a:r))[1];
     }
 
@@ -55,11 +54,23 @@ const Tetris = () => {
         console.log("Listening for commands..");
         // Model listens to our microphone to check if we are actually saying something
         model.listen(result => {
-            console.log(result.spectrogram)
             setAction(labels[argMax(Object.values(result.scores))]) // Returns the most accurate result
-            console.log(labels[argMax(Object.values(result.scores))]);
-        }, { includeSpectrogram: true, probabilityThreshold: 0.7 }) // Additional Parameters
+        }, { includeSpectrogram: true, probabilityThreshold: 0.9 }) // Additional Parameters
     }
+
+    useEffect(() => {
+        if (action === "left") {
+            movePlayer(-1);
+        } else if (action === "right") {
+            movePlayer(1); 
+        } else if (action === "down") {
+            dropPlayer();
+        } else if (action === "up") {
+            playerRotate(stage, 1);
+        }
+    }, [action]);
+
+    console.log(action);
 
     const movePlayer = dir => {
         if (!checkCollision(player, stage, { x: dir, y: 0})) {
@@ -104,11 +115,11 @@ const Tetris = () => {
         if(!gameOver) {
             if (keyCode === 37) { // Left
                 movePlayer(-1);
-            } else if (keyCode === 39) {
-                movePlayer(1); // Right
+            } else if (keyCode === 39) { // Right
+                movePlayer(1); 
             } else if (keyCode === 40) { // Down
                 dropPlayer();
-            } else if (keyCode === 38) {
+            } else if (keyCode === 38) { // Rotate
                 playerRotate(stage, 1);
             }
         };
