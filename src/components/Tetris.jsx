@@ -78,6 +78,17 @@ const Tetris = () => {
         }
     };
 
+    // const movePlayerByVoice = dir => {
+    //     if (checkCollision(player, stage, { x: dir, y: 0})) {
+    //        return
+    //     }
+
+    //     if (!checkCollision(player, stage, { x: dir, y: 0})) {
+    //         updatePlayerPosition({x: dir, y: 0})
+    //         movePlayerByVoice(dir)
+    //     }
+    // };
+
     const startGame = () => {
         setStage(createStage());
         setDropTime(1000);
