@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-// Tensorflow Speech Commands Model
+// Tensorflow & It's Speech Commands Model
 import * as tf from "@tensorflow/tfjs";
 import * as speech from "@tensorflow-models/speech-commands";
 
@@ -64,15 +64,17 @@ const Tetris = () => {
     // Listens to command
     const recognizeCommands = async () => {
        model.listen(result => {
+           console.log(result);
+
             // Assign most accurate word to command
             let command = labels[argMax(Object.values(result.scores))];
             console.log(command);
             setAction(command);
-            // movebyVoice(command);
+
         }, { includeSpectrogram: true, 
             probabilityThreshold: 0.75, 
             invokeCallbackOnNoiseAndUnknown: true,
-            }) // Additional Parameters
+            }) 
     }
 
     useEffect(() => {
