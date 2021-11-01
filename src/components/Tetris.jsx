@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 // Tensorflow Speech Commands Model
+import * as tf from "@tensorflow/tfjs";
 import * as speech from "@tensorflow-models/speech-commands";
 
 // Custom Hooks
@@ -29,6 +30,7 @@ const Tetris = () => {
     // For speech commands
     const [model, setModel] = useState(null);
     const [labels, setLabels] = useState(null);
+    const [action, setAction] = useState(null);
 
     // My Own Trained Library
     const URL = "https://teachablemachine.withgoogle.com/models/djToJU1TI/"
@@ -65,25 +67,28 @@ const Tetris = () => {
             // Assign most accurate word to command
             let command = labels[argMax(Object.values(result.scores))];
             console.log(command);
-            movebyVoice(command);
-
+            setAction(command);
+            // movebyVoice(command);
         }, { includeSpectrogram: true, 
             probabilityThreshold: 0.75, 
             invokeCallbackOnNoiseAndUnknown: true,
             }) // Additional Parameters
     }
 
-    const movebyVoice = act => {
-        if (act === "Left") {
-            movePlayer(-1);
-        } else if (act === "Right") {
-            movePlayer(1); 
-        } else if (act === "Drop") {
-            dropPlayer();
-        } else if (act === "Rotate") {
-            playerRotate(stage, 1);
+    useEffect(() => {
+        const movebyVoice = act => {
+            if (act === "Left") {
+                movePlayer(-1);
+            } else if (act === "Right") {
+                movePlayer(1); 
+            } else if (act === "Drop") {
+                dropPlayer();
+            } else if (act === "Rotate") {
+                playerRotate(stage, 1);
+            }
         }
-    }
+        movebyVoice(action)
+    }, [action]);
 
     const movePlayer = dir => {
         if (!checkCollision(player, stage, { x: dir, y: 0})) {
