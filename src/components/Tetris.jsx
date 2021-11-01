@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 // Tensorflow Speech Commands Model
-import * as tf from "@tensorflow/tfjs";
 import * as speech from "@tensorflow-models/speech-commands";
 
 // Custom Hooks
@@ -29,65 +28,68 @@ const Tetris = () => {
 
     // For speech commands
     const [model, setModel] = useState(null);
-    const [action, setAction] = useState(null);
     const [labels, setLabels] = useState(null);
 
-    const loadModel = async () => { // Loads the Speech Command Model
-        const recognizer = await speech.create('BROWSER_FFT', 'directional4w');
-        console.log("Model Loaded");
-        await recognizer.ensureModelLoaded()
-        console.log(recognizer.wordLabels()) 
+    // My Own Trained Library
+    const URL = "https://teachablemachine.withgoogle.com/models/djToJU1TI/"
+
+    const loadModel = async () => {
+        const checkpointURL = URL + "model.json"; // model topology
+        const metadataURL = URL + "metadata.json"; // model metadata
+
+        const recognizer = speech.create(
+            'BROWSER_FFT', 
+            undefined, 
+            checkpointURL,
+            metadataURL
+            );
+            
+        await recognizer.ensureModelLoaded();
+
         setModel(recognizer);
-        setLabels(recognizer.wordLabels()); // ["left", "right", "down", "rotate"]
+        setLabels(recognizer.wordLabels());
     };
 
     useEffect(() => {
         loadModel()
     }, []);
 
-    function argMax(arr) { // Gets the most accurate word
+    // Gets the most accurate word
+    function argMax(arr) { 
         return arr.map((x, i) => [x, i]).reduce((r,a) => (a[0] > r[0] ? a:r))[1];
     }
 
-    const recognizeCommands = async () => { // Listens to command
-        // As soon as model is triggered, 
-        console.log("Listening for commands..");
-        // Model listens to our microphone to check if we are actually saying something
-        model.listen(result => {
-            setAction(labels[argMax(Object.values(result.scores))]) // Returns the most accurate result
-        }, { includeSpectrogram: true, probabilityThreshold: 0.9 }) // Additional Parameters
+    // Listens to command
+    const recognizeCommands = async () => {
+       model.listen(result => {
+            // Assign most accurate word to command
+            let command = labels[argMax(Object.values(result.scores))];
+            console.log(command);
+            movebyVoice(command);
+
+        }, { includeSpectrogram: true, 
+            probabilityThreshold: 0.75, 
+            invokeCallbackOnNoiseAndUnknown: true,
+            }) // Additional Parameters
     }
 
-    useEffect(() => {
-        if (action === "left") {
+    const movebyVoice = act => {
+        if (act === "Left") {
             movePlayer(-1);
-        } else if (action === "right") {
+        } else if (act === "Right") {
             movePlayer(1); 
-        } else if (action === "down") {
+        } else if (act === "Drop") {
             dropPlayer();
-        } else if (action === "up") {
+        } else if (act === "Rotate") {
             playerRotate(stage, 1);
         }
-    }, [action]);
-
-    console.log(action);
+    }
 
     const movePlayer = dir => {
         if (!checkCollision(player, stage, { x: dir, y: 0})) {
             updatePlayerPosition({x: dir, y: 0})
         }
     };
-
-    // const movePlayerByVoice = dir => {
-    //     if (checkCollision(player, stage, { x: dir, y: 0})) {
-    //        return
-    //     }
-
-    //     if (!checkCollision(player, stage, { x: dir, y: 0})) {
-    //         updatePlayerPosition({x: dir, y: 0})
-    //         movePlayerByVoice(dir)
-    //     }
-    // };
 
     const startGame = () => {
         setStage(createStage());
@@ -155,7 +157,7 @@ const Tetris = () => {
                     </div>
                     )}
                     <StartButton callback={startGame}/>
-                    <VoiceCommand callback={recognizeCommands} action={action}/>
+                    <VoiceCommand callback={recognizeCommands}/>
                 </aside>
             </StyledTetris>
         </StyledTetrisWrapper>
